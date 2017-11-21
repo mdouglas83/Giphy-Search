@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Giphy Search</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <style type="text/css">
+    * {
+      box-sizing: border-box;
+    }
+    button,
+    form,
+    input,
+    select {
+      margin: 5px;
+      padding: 5px;
+    }
+    div {
+      line-height: 1.5em;
+      /*overflow: scroll;*/
+      word-wrap: normal;
+    }
+    hr {
+      height: 2px;
+      border: 0;
+      background: #dfdffa;
+    }
+    .page-title {
+      font-size: 24px;
+      font-weight: bold;
+      width: 50%;
+      display: inline;
+    }
+    .page-search {
+      float: right;
+      width: 50%;
+      display: inline;
+    }
+    .topic {
+      background-color: #88aaee;
+      border: none;
+      padding: 5px 10px 5px 10px;
+      border-radius: 3px;
+      color: #ffffff;
+    }
+    .topic:hover {
+      background-color: #aa4488;
+    }
+    #add-topic {
+      background-color: #ee2244;
+      border: none;
+      padding: 5px 10px 5px 10px;
+      border-radius: 3px;
+      color: #ffffff;
+    }
+    #add-topic:hover {
+      background-color: #ff0044;
+    }
+    .image-box {
+      float: left;
+      margin: 0px 10px 10px 20px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .image-disp:hover {
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div style="width: 100%;">
+      <div class="page-title">Giphy Search</div>
+      <div class="page-search">
+        <form id="topic-form">
+          <label for="topic-input">Add a Topic</label>
+          <input type="text" id="topic-input">
+          <select name="topic-rating">
+              <option value="Y">Y</option>
+              <option value="G">G</option>
+              <option value="PG">PG</option>
+              <option selected value="PG-13">PG-13</option>
+              <option value="R">R</option>
+          </select>
+          <button id="add-topic">Add a Topic</button>
+        </form>
+      </div>
+    </div>
+    <div style="width: 100%;">
+      <div id="buttons-view" style="margin-top: 30px; width: 100%;"></div>
+      <hr>
+      <div id="topic-view"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      
+      var topics = ["Mr. Robot", "Bob's Burgers", "Fight Club", "Archer"];
+      
+      function obfuAK() {
+        var k = "", a = ["C", "z", "m", "J", "F", "x", "O", "T", "a", "z", "6", "c", "d", "=", "y", "e", "k", "_", "i", "p", "a"]
+        for (i = a.length - 1; i >= 0; i--) {
+          k += a[i];
+        }
+        return k;
+      }
+
+      function displayTopic(topic) {
+        var qTopic = topic.replace(" ", "+");
+        var qLimit = 10;
+        var qRating = "PG-13"
+        var qURL = 
+          "https://api.giphy.com/v1/gifs/search?" +
+          "q=" + qTopic + "&" +
+          "limit=" + qLimit + "&" +
+          "rating=" + qRating + "&" +
+          obfuAK();
+        $.ajax({
+          url: qURL,
+          method: "GET",
+          success: 
+            function(response) {
+              var results = response.data;
+              $("#topic-view").empty();
+              for (var i = 0; i < results.length; i++) {
+                var animalDiv = $("<div>");
+                animalDiv.addClass("image-box");
+                var p = $("<p>").text("Rating: " + results[i].rating);
+                var animalImage = $("<img>");
+                animalImage.attr("src", results[i].images.fixed_height_still.url);
+                animalImage.attr("data-animate", results[i].images.fixed_height.url);
+                animalImage.attr("data-still", results[i].images.fixed_height_still.url);
+                animalImage.attr("data-state", "still");
+                animalImage.addClass("image-disp");
+                animalDiv.append(p);
+                animalDiv.append(animalImage);
+                $("#topic-view").append(animalDiv);
+              }
+          },
+          error:
+            function (xhr, textStatus, errorThrown) {
+              console.log(xhr, textStatus, errorThrown);
+          }
+        });
+      }
+
+      function renderButtons() {
+        $("#buttons-view").empty();
+        for (var i = 0; i < topics.length; i++) {
+          var a = $("<button>");
+          a.addClass("topic");
+          a.attr("data-name", topics[i]);
+          a.text(topics[i]);
+          $("#buttons-view").append(a);
+        }
+      }
+
+      $("#add-topic").on("click", function(event) {
+        event.preventDefault();
+        var topic = $("#topic-input").val().trim();
+        if (topic.length > 0) {
+          topics.push(topic);
+          renderButtons();
+          $("#topic-input").val("");
+        }
+      });
+
+      $(document).on("click", ".topic", function(event) {
+        displayTopic($(this).attr("data-name"))
+      });
+
+      $(document).on("click", ".image-disp", function(event) {
+        var state = $(this).attr("data-state");
+        if (state === "still") {
+          $(this).attr("src", $(this).attr("data-animate"));
+          $(this).attr("data-state", "animate");
+        } else {
+          $(this).attr("src", $(this).attr("data-still"));
+          $(this).attr("data-state", "still");
+        }
+      });
+      renderButtons();
+
+    </script>
+  </div>
+</body>
+
+</html>
