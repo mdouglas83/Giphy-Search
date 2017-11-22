@@ -17,25 +17,34 @@
       padding: 5px;
     }
     div {
-      line-height: 1.5em;
-      /*overflow: scroll;*/
+      line-height: 1.0em;
       word-wrap: normal;
     }
     hr {
-      height: 2px;
+      margin: 10px auto;
+      height: 1px;
       border: 0;
-      background: #dfdffa;
+      background: #dddddd;
     }
     .page-title {
-      font-size: 24px;
+      position: relative;
+      left: 0px;
+      margin: 20px 0px 0px 0px;
+      font-size: 30px;
       font-weight: bold;
       width: 50%;
-      display: inline;
+      color: #444444;
+      display: inline-block;
     }
     .page-search {
-      float: right;
+      margin: 15px 0px 0px 0px;
+      position: absolute;
+      right: 0px;
       width: 50%;
-      display: inline;
+      display: inline-block;
+    }
+    #topic-view {
+      margin: 0px;
     }
     .topic {
       background-color: #88aaee;
@@ -45,7 +54,7 @@
       color: #ffffff;
     }
     .topic:hover {
-      background-color: #aa4488;
+      background-color: #6688ff;
     }
     #add-topic {
       background-color: #ee2244;
@@ -57,11 +66,18 @@
     #add-topic:hover {
       background-color: #ff0044;
     }
+    #buttons-view {
+      position: relative;
+      margin-top: 15px;
+      width: 100%
+    }
+
     .image-box {
       float: left;
-      margin: 0px 10px 10px 20px;
+      margin: 10px 5px 10px 5px;
       font-size: 14px;
       font-weight: bold;
+      color: #aaaaaa;
     }
     .image-disp:hover {
       cursor: pointer;
@@ -78,7 +94,7 @@
       <div class="page-search">
         <form id="topic-form">
           <label for="topic-input">Add a Topic</label>
-          <input type="text" id="topic-input">
+          <input type="text" id="topic-input" style="min-width: 100px; max-width: 200px;">
           <select name="topic-rating">
               <option value="Y">Y</option>
               <option value="G">G</option>
@@ -91,7 +107,7 @@
       </div>
     </div>
     <div style="width: 100%;">
-      <div id="buttons-view" style="margin-top: 30px; width: 100%;"></div>
+      <div id="buttons-view"></div>
       <hr>
       <div id="topic-view"></div>
     </div>
@@ -101,7 +117,11 @@
       var topics = ["Mr. Robot", "Bob's Burgers", "Fight Club", "Archer"];
       
       function obfuAK() {
-        var k = "", a = ["C", "z", "m", "J", "F", "x", "O", "T", "a", "z", "6", "c", "d", "=", "y", "e", "k", "_", "i", "p", "a"]
+        var k = "";
+        a = [
+          "k", "m", "3", "J", "4", "L", "z", "t", "z", "g", "G", "V", "X", "K", "b", "Z", "x", "D", "s", "x", 
+          "p", "t", "U", "i", "6", "Z", "R", "i", "y", "M", "4", "b", "=", "y", "e", "k", "_", "i", "p", "a"
+        ];
         for (i = a.length - 1; i >= 0; i--) {
           k += a[i];
         }
@@ -126,18 +146,18 @@
               var results = response.data;
               $("#topic-view").empty();
               for (var i = 0; i < results.length; i++) {
-                var animalDiv = $("<div>");
-                animalDiv.addClass("image-box");
+                var giphyDiv = $("<div>");
+                giphyDiv.addClass("image-box");
                 var p = $("<p>").text("Rating: " + results[i].rating);
-                var animalImage = $("<img>");
-                animalImage.attr("src", results[i].images.fixed_height_still.url);
-                animalImage.attr("data-animate", results[i].images.fixed_height.url);
-                animalImage.attr("data-still", results[i].images.fixed_height_still.url);
-                animalImage.attr("data-state", "still");
-                animalImage.addClass("image-disp");
-                animalDiv.append(p);
-                animalDiv.append(animalImage);
-                $("#topic-view").append(animalDiv);
+                var giphyImage = $("<img>");
+                giphyImage.attr("src", results[i].images.fixed_height_still.url);
+                giphyImage.attr("data-animate", results[i].images.fixed_height.url);
+                giphyImage.attr("data-still", results[i].images.fixed_height_still.url);
+                giphyImage.attr("data-state", "still");
+                giphyImage.addClass("image-disp");
+                giphyDiv.append(p);
+                giphyDiv.append(giphyImage);
+                $("#topic-view").append(giphyDiv);
               }
           },
           error:
